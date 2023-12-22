@@ -175,6 +175,7 @@ export default {
   background: #ffffff;
   width: 400px;
   padding: 25px 25px 5px 25px;
+  opacity: 0.9;
   .el-input {
     height: 38px;
     input {
