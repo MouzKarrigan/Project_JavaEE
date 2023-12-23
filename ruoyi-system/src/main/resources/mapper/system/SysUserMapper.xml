@@ -22,7 +22,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createTime"   column="create_time"  />
         <result property="updateBy"     column="update_by"    />
         <result property="updateTime"   column="update_time"  />
-        <result property="remark"       column="remark"       />
+		<result property="remark"       column="remark"       />
+		<result property="riskLevel"    column="c_risk_level" />
+		<result property="credID"       column="c_ID"         />
+		<result property="credType"     column="c_ID_type"    />
+		<result property="address"      column="c_address"    />
         <association property="dept"    javaType="SysDept"         resultMap="deptResult" />
         <collection  property="roles"   javaType="java.util.List"  resultMap="RoleResult" />
     </resultMap>
@@ -47,7 +51,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 	
 	<sql id="selectUserVo">
-        select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, 
+        select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, u.c_risk_level, u.c_ID_type, u.c_ID, u.c_address,
         d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.status as dept_status,
         r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
         from sys_user u
@@ -57,8 +61,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </sql>
     
     <select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
-		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, d.dept_name, d.leader from sys_user u
-		left join sys_dept d on u.dept_id = d.dept_id
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, u.c_risk_level, u.c_ID_type, u.c_ID, u.c_address, d.dept_name, d.leader, r.role_key
+		from sys_user u
+			left join sys_dept d on u.dept_id = d.dept_id
+			left join sys_user_role ur on u.user_id = ur.user_id
+			left join sys_role r on r.role_id = ur.role_id
 		where u.del_flag = '0'
 		<if test="userId != null and userId != 0">
 			AND u.user_id = #{userId}
@@ -69,6 +76,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<if test="status != null and status != ''">
 			AND u.status = #{status}
 		</if>
+
+		<if test="riskLevel != null and riskLevel != ''">
+			AND u.c_risk_level = #{riskLevel}
+		</if>
+
 		<if test="phonenumber != null and phonenumber != ''">
 			AND u.phonenumber like concat('%', #{phonenumber}, '%')
 		</if>
@@ -113,6 +125,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	    <if test="userName != null and userName != ''">
 			AND u.user_name like concat('%', #{userName}, '%')
 		</if>
+
 		<if test="phonenumber != null and phonenumber != ''">
 			AND u.phonenumber like concat('%', #{phonenumber}, '%')
 		</if>

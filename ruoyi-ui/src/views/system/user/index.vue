@@ -1,12 +1,14 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
+
+      <!--检索筛选-->
       <!--部门数据-->
       <el-col :span="4" :xs="24">
         <div class="head-container">
           <el-input
             v-model="deptName"
-            placeholder="请输入部门名称"
+            placeholder="请输入支行名称"
             clearable
             size="small"
             prefix-icon="el-icon-search"
@@ -74,6 +76,23 @@
               end-placeholder="结束日期"
             ></el-date-picker>
           </el-form-item>
+
+          <el-form-item label="风险类型">
+            <el-select
+              v-model="queryParams.riskLevel"
+              placeholder="用户风险类型"
+              clearable
+              style="width: 240px"
+            >
+              <el-option
+                v-for="item in riskLevelDict"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+
           <el-form-item>
             <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
             <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -113,7 +132,7 @@
               v-hasPermi="['system:user:remove']"
             >删除</el-button>
           </el-col>
-          <el-col :span="1.5">
+          <el-col :span="1.5" v-if="false">
             <el-button
               type="info"
               plain
@@ -141,7 +160,7 @@
           <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns[0].visible" />
           <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
+          <el-table-column label="所属基金公司/支行" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
           <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
           <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
             <template slot-scope="scope">
@@ -158,6 +177,13 @@
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
           </el-table-column>
+          <el-table-column label="风险类型" align="center" key="riskLevel" v-if="columns[7].visible">
+            <template slot-scope="scope">
+              <div v-if="scope.row.riskLevel === '0'">保守型</div>
+              <div v-else-if="scope.row.riskLevel === '1'">稳健型</div>
+              <div v-else-if="scope.row.riskLevel === '2'">激进型</div>
+            </template>
+          </el-table-column>
           <el-table-column
             label="操作"
             align="center"
@@ -171,7 +197,7 @@
                 icon="el-icon-edit"
                 @click="handleUpdate(scope.row)"
                 v-hasPermi="['system:user:edit']"
-              >修改</el-button>
+              >详情</el-button>
               <el-button
                 size="mini"
                 type="text"
@@ -180,12 +206,10 @@
                 v-hasPermi="['system:user:remove']"
               >删除</el-button>
               <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
-                <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
+                <el-button size="mini" type="text" icon="el-icon-d-arrow-right" v-if="false">更多</el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
                     v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
-                  <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
-                    v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
@@ -212,8 +236,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属部门" />
+            <el-form-item label="所属支行" prop="deptId">
+              <treeselect v-model="form.deptId" :options="deptOptions" :show-count="true" placeholder="请选择归属支行" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -229,6 +253,28 @@
             </el-form-item>
           </el-col>
         </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="证件类型" required>
+              <el-select v-model="form.credType" placeholder="请选择证件" >
+                <el-option
+                  v-for="dict in credTypeDict"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="12">
+            <el-form-item label="证件号码" prop="credID">
+              <el-input v-model="form.credID" placeholder="请输入证件号码" maxlength="50" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
         <el-row>
           <el-col :span="12">
             <el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
@@ -268,23 +314,26 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="岗位">
-              <el-select v-model="form.postIds" multiple placeholder="请选择岗位">
+            <el-form-item label="风险等级" required>
+              <el-select v-model="form.riskLevel" placeholder="请选择风险等级">
                 <el-option
-                  v-for="item in postOptions"
-                  :key="item.postId"
-                  :label="item.postName"
-                  :value="item.postId"
-                  :disabled="item.status == 1"
+                  v-for="dict in riskLevelDict"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
                 ></el-option>
               </el-select>
             </el-form-item>
           </el-col>
+
           <el-col :span="12">
-            <el-form-item label="角色">
-              <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
+            <el-form-item label="权限" required>
+              <el-select v-model="form.roleIds" multiple placeholder="请选择权限">
                 <el-option
                   v-for="item in roleOptions"
+
+                  v-if="item.roleKey !== user.state.roles[0]"
+
                   :key="item.roleId"
                   :label="item.roleName"
                   :value="item.roleId"
@@ -345,9 +394,15 @@ import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUs
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import user from "@/store/modules/user";
 
 export default {
   name: "User",
+  computed: {
+    user() {
+      return user
+    }
+  },
   dicts: ['sys_normal_disable', 'sys_user_sex'],
   components: { Treeselect },
   data() {
@@ -388,6 +443,15 @@ export default {
         children: "children",
         label: "label"
       },
+      riskLevelDict: [
+        {value: "0",label: "保守型"},
+        {value: "1",label: "稳健型"},
+        {value: "2",label: "激进型"},
+      ],
+      credTypeDict: [
+        {value: "0",label: "身份证"},
+        {value: "1",label: "港澳台护照"},
+      ],
       // 用户导入参数
       upload: {
         // 是否显示弹出层（用户导入）
@@ -410,17 +474,19 @@ export default {
         userName: undefined,
         phonenumber: undefined,
         status: undefined,
-        deptId: undefined
+        deptId: undefined,
+        riskLevel: undefined,
       },
       // 列信息
       columns: [
         { key: 0, label: `用户编号`, visible: true },
         { key: 1, label: `用户名称`, visible: true },
-        { key: 2, label: `用户昵称`, visible: true },
-        { key: 3, label: `部门`, visible: true },
+        { key: 2, label: `用户昵称`, visible: false },
+        { key: 3, label: `支行`, visible: true },
         { key: 4, label: `手机号码`, visible: true },
         { key: 5, label: `状态`, visible: true },
-        { key: 6, label: `创建时间`, visible: true }
+        { key: 6, label: `创建时间`, visible: true },
+        { key: 7, label: `风险类型`, visible: true },
       ],
       // 表单校验
       rules: {
@@ -435,6 +501,18 @@ export default {
           { required: true, message: "用户密码不能为空", trigger: "blur" },
           { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
         ],
+        deptId: [
+          { required:true,  message:"请选择一个支行", trigger: "blur" }
+        ],
+        credType: [
+          { required:true,  message:"请选择一种证件", trigger: "blur" }
+        ],
+        credID: [
+          { required: true, message: "身份证件不能为空", trigger: "blur" }
+        ],
+        roleIds: [
+          { required: true, message: "请至少选择一个权限", trigger: "blur" }
+        ],
         email: [
           {
             type: "email",
@@ -444,6 +522,7 @@ export default {
         ],
         phonenumber: [
           {
+            required: true,
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: "请输入正确的手机号码",
             trigger: "blur"
@@ -471,6 +550,9 @@ export default {
       this.loading = true;
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
           this.userList = response.rows;
+
+          this.userList = this.userList.filter(u => u.roles[0].roleKey !== user.state.roles[0]);
+
           this.total = response.total;
           this.loading = false;
         }
@@ -521,6 +603,10 @@ export default {
         sex: undefined,
         status: "0",
         remark: undefined,
+        riskLevel: undefined,
+        credType: undefined,
+        credID: undefined,
+        address: undefined,
         postIds: [],
         roleIds: []
       };
@@ -536,6 +622,7 @@ export default {
       this.dateRange = [];
       this.resetForm("queryForm");
       this.queryParams.deptId = undefined;
+      this.queryParams.riskLevel = null;
       this.$refs.tree.setCurrentKey(null);
       this.handleQuery();
     },
@@ -580,7 +667,7 @@ export default {
         this.$set(this.form, "postIds", response.postIds);
         this.$set(this.form, "roleIds", response.roleIds);
         this.open = true;
-        this.title = "修改用户";
+        this.title = "用户详情";
         this.form.password = "";
       });
     },
