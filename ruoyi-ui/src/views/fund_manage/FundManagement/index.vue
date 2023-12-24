@@ -223,7 +223,7 @@
         </el-form-item>
         <el-form-item label="风险评级" prop="fRiskLevel">
           <el-rate 
-            v-model="queryParams.fRiskLevel" 
+            v-model="form.fRiskLevel" 
             size="large" 
             :max=3
             :texts="['低风险', '中风险', '高风险']"
