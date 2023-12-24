@@ -27,12 +27,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="fName != null  and fName != ''"> and f_name like concat('%', #{fName}, '%')</if>
             <if test="fType != null "> and f_type = #{fType}</if>
-            <if test="fSize != null "> and f_size = #{fSize}</if>
+            <if test="fSize != 0 "> and f_size = #{fSize}</if>
             <if test="fMonitor != null  and fMonitor != ''"> and f_monitor = #{fMonitor}</if>
             <if test="fStartTime != null "> and f_start_time = #{fStartTime}</if>
             <if test="fCompany != null  and fCompany != ''"> and f_company = #{fCompany}</if>
-            <if test="fLevel != null "> and f_level = #{fLevel}</if>
-            <if test="fRiskLevel != null "> and f_risk_level = #{fRiskLevel}</if>
+            <if test="fLevel != 0 "> and f_level = #{fLevel}</if>
+            <if test="fRiskLevel != 0 "> and f_risk_level = #{fRiskLevel}</if>
             <if test="fOverview != null  and fOverview != ''"> and f_overview = #{fOverview}</if>
             <if test="fStatus != null "> and f_status = #{fStatus}</if>
         </where>
