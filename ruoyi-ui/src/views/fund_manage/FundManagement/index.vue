@@ -9,12 +9,16 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="基金规模" prop="fSize">
-        <el-input
-          v-model="queryParams.fSize"
-          placeholder="请输入基金规模"
-          clearable
-          @keyup.enter.native="handleQuery"
+      <el-form-item label="基金规模" prop="fSize"  style="width:265px">
+        <el-rate 
+          v-model="queryParams.fSize" 
+          size="large"
+          :max=5
+          :texts="['1亿以下', '1-10亿', '10-30亿', '30-100亿', '100亿以上']"
+          :colors="['blue','blue','blue']"
+          show-text
+          style="position:relative;top:5px"
+          @change="handleQuery"
         />
       </el-form-item>
       <el-form-item label="基金经理" prop="fMonitor">
@@ -25,7 +29,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="基金成立日" prop="fStartTime">
+      <el-form-item label="成立日" prop="fStartTime">
         <el-date-picker clearable
           v-model="queryParams.fStartTime"
           type="date"
@@ -33,31 +37,39 @@
           placeholder="请选择基金成立日">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="基金所属公司" prop="fCompany">
-        <el-input
-          v-model="queryParams.fCompany"
-          placeholder="请输入基金所属公司"
-          clearable
-          @keyup.enter.native="handleQuery"
+      <el-form-item label="所属公司" prop="fCompany">
+        <treeselect
+          v-model="queryParams.fCompany" 
+          :options="deptOptions" 
+          :show-count="true"
+          placeholder="请选择归属部门" 
+          style="width:198px"
         />
       </el-form-item>
-      <el-form-item label="基金评级(0~4)" prop="fLevel">
-        <el-input
-          v-model="queryParams.fLevel"
-          placeholder="请输入基金评级(0~4)"
-          clearable
-          @keyup.enter.native="handleQuery"
+      <el-form-item label="基金评级" prop="fLevel" style="width:265px">
+        <el-rate 
+          v-model="queryParams.fLevel" 
+          size="large"
+          :max=5
+          :texts="['较差', '合格', '中等', '良好', '极佳']"
+          show-text
+          style="position:relative;top:5px"
+          @change="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="基金风险评级(012对应低中高)" prop="fRiskLevel">
-        <el-input
-          v-model="queryParams.fRiskLevel"
-          placeholder="请输入基金风险评级(012对应低中高)"
-          clearable
-          @keyup.enter.native="handleQuery"
+      <el-form-item label="风险评级" prop="fRiskLevel" style="width:267px">
+        <el-rate 
+          v-model="queryParams.fRiskLevel" 
+          size="large" 
+          :max=3
+          :texts="['低风险', '中风险', '高风险']"
+          :colors="['red','red','red']"
+          show-text
+          style="position:relative;top:5px"
+          @change="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="基金基本概况" prop="fOverview">
+      <el-form-item label="基本概况" prop="fOverview">
         <el-input
           v-model="queryParams.fOverview"
           placeholder="请输入基金基本概况"
@@ -124,15 +136,15 @@
       <el-table-column label="基金类型" align="center" prop="fType" />
       <el-table-column label="基金规模" align="center" prop="fSize" />
       <el-table-column label="基金经理" align="center" prop="fMonitor" />
-      <el-table-column label="基金成立日" align="center" prop="fStartTime" width="180">
+      <el-table-column label="成立日" align="center" prop="fStartTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.fStartTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="基金所属公司" align="center" prop="fCompany" />
-      <el-table-column label="基金评级(0~4)" align="center" prop="fLevel" />
-      <el-table-column label="基金风险评级(012对应低中高)" align="center" prop="fRiskLevel" />
-      <el-table-column label="基金基本概况" align="center" prop="fOverview" />
+      <el-table-column label="所属公司" align="center" prop="fCompany" />
+      <el-table-column label="基金评级" align="center" prop="fLevel" />
+      <el-table-column label="风险评级" align="center" prop="fRiskLevel" />
+      <el-table-column label="基本概况" align="center" prop="fOverview" />
       <el-table-column label="基金状态" align="center" prop="fStatus" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -169,12 +181,21 @@
           <el-input v-model="form.fName" placeholder="请输入基金名称" />
         </el-form-item>
         <el-form-item label="基金规模" prop="fSize">
-          <el-input v-model="form.fSize" placeholder="请输入基金规模" />
+          <!-- <el-input v-model="form.fSize" placeholder="请输入基金规模" /> -->
+          <el-rate 
+            v-model="form.fSize" 
+            size="large"
+            :max=5
+            :texts="['1亿以下', '1-10亿', '10-30亿', '30-100亿', '100亿以上']"
+            :colors="['blue','blue','blue']"
+            show-text
+            style="position:relative;top:5px"
+          />
         </el-form-item>
         <el-form-item label="基金经理" prop="fMonitor">
           <el-input v-model="form.fMonitor" placeholder="请输入基金经理" />
         </el-form-item>
-        <el-form-item label="基金成立日" prop="fStartTime">
+        <el-form-item label="成立日" prop="fStartTime">
           <el-date-picker clearable
             v-model="form.fStartTime"
             type="date"
@@ -182,16 +203,36 @@
             placeholder="请选择基金成立日">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="基金所属公司" prop="fCompany">
-          <el-input v-model="form.fCompany" placeholder="请输入基金所属公司" />
+        <el-form-item label="所属公司" prop="fCompany">
+          <treeselect
+            v-model="form.fCompany" 
+            :options="deptOptions" 
+            :show-count="true"
+            placeholder="请选择归属部门" 
+          />
         </el-form-item>
-        <el-form-item label="基金评级(0~4)" prop="fLevel">
-          <el-input v-model="form.fLevel" placeholder="请输入基金评级(0~4)" />
+        <el-form-item label="基金评级" prop="fLevel">
+          <el-rate 
+            v-model="form.fLevel" 
+            size="large"
+            :max=5
+            :texts="['较差', '合格', '中等', '良好', '极佳']"
+            show-text
+            style="position:relative;top:5px"
+          />
         </el-form-item>
-        <el-form-item label="基金风险评级(012对应低中高)" prop="fRiskLevel">
-          <el-input v-model="form.fRiskLevel" placeholder="请输入基金风险评级(012对应低中高)" />
+        <el-form-item label="风险评级" prop="fRiskLevel">
+          <el-rate 
+            v-model="queryParams.fRiskLevel" 
+            size="large" 
+            :max=3
+            :texts="['低风险', '中风险', '高风险']"
+            :colors="['red','red','red']"
+            show-text
+            style="position:relative;top:5px"
+          />
         </el-form-item>
-        <el-form-item label="基金基本概况" prop="fOverview">
+        <el-form-item label="基本概况" prop="fOverview">
           <el-input v-model="form.fOverview" placeholder="请输入基金基本概况" />
         </el-form-item>
       </el-form>
@@ -205,9 +246,13 @@
 
 <script>
 import { listFundManagement, getFundManagement, delFundManagement, addFundManagement, updateFundManagement } from "@/api/fund_manage/FundManagement";
+import { deptTreeSelect } from "@/api/system/user";
+import Treeselect from "@riophae/vue-treeselect";
+import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 
 export default {
   name: "FundManagement",
+  components: { Treeselect },
   data() {
     return {
       // 遮罩层
@@ -222,6 +267,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
+      // 部门树选项
+      deptOptions: undefined,
       // 基金管理表格数据
       FundManagementList: [],
       // 弹出层标题
@@ -238,7 +285,9 @@ export default {
         fMonitor: null,
         fStartTime: null,
         fCompany: null,
+        // 基金评级
         fLevel: null,
+        // 基金风险评级
         fRiskLevel: null,
         fOverview: null,
         fStatus: null
@@ -252,8 +301,15 @@ export default {
   },
   created() {
     this.getList();
+    this.getDeptTree();
   },
   methods: {
+    /** 查询部门下拉树结构 */
+    getDeptTree() {
+      deptTreeSelect().then(response => {
+        this.deptOptions = response.data;
+      });
+    },
     /** 查询基金管理列表 */
     getList() {
       this.loading = true;
