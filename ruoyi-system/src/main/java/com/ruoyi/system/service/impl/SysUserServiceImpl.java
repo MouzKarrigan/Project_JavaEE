@@ -124,6 +124,11 @@ public class SysUserServiceImpl implements ISysUserService
         return userMapper.selectUserById(userId);
     }
 
+    @Override
+    public SysUser selectUserByRiskLevel(String riskLevel)
+    {
+        return userMapper.selectUserByRiskLevel(riskLevel);
+    }
     /**
      * 查询用户所属角色组
      * 

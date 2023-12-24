@@ -52,6 +52,26 @@ public class SysUser extends BaseEntity
     /** 用户头像 */
     private String avatar;
 
+    // 012对应低中高
+    private String riskLevel;
+
+    public void setRiskLevel(String riskLevel) {
+        this.riskLevel = riskLevel;
+    }
+
+    public void setCredType(String credType) {
+        this.credType = credType;
+    }
+
+    // 数字对应类型（身份证=0，护照=1）
+    private String credType;
+
+    private String credID;
+
+    private String address;
+
+
+
     /** 密码 */
     private String password;
 
@@ -65,6 +85,8 @@ public class SysUser extends BaseEntity
     /** 最后登录IP */
     @Excel(name = "最后登录IP", type = Type.EXPORT)
     private String loginIp;
+
+
 
     /** 最后登录时间 */
     @Excel(name = "最后登录时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss", type = Type.EXPORT)
@@ -272,6 +294,14 @@ public class SysUser extends BaseEntity
         return roleIds;
     }
 
+    public String getRiskLevel() {
+        return riskLevel;
+    }
+
+    public String getCredType() {
+        return credType;
+    }
+
     public void setRoleIds(Long[] roleIds)
     {
         this.roleIds = roleIds;
@@ -297,6 +327,22 @@ public class SysUser extends BaseEntity
         this.roleId = roleId;
     }
 
+    public String getCredID() {
+        return credID;
+    }
+
+    public void setCredID(String credID) {
+        this.credID = credID;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
@@ -319,6 +365,10 @@ public class SysUser extends BaseEntity
             .append("updateTime", getUpdateTime())
             .append("remark", getRemark())
             .append("dept", getDept())
+                .append("riskLevel",getRiskLevel())
+                .append("address",getAddress())
+                .append("credType",getCredType())
+                .append("credID",getCredID())
             .toString();
     }
 }

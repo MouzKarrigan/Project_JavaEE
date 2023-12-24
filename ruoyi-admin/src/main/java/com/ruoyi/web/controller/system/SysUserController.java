@@ -34,8 +34,6 @@ import com.ruoyi.system.service.ISysUserService;
 
 /**
  * 用户信息
- * 
- * @author ruoyi
  */
 @RestController
 @RequestMapping("/system/user")
@@ -104,6 +102,9 @@ public class SysUserController extends BaseController
         userService.checkUserDataScope(userId);
         AjaxResult ajax = AjaxResult.success();
         List<SysRole> roles = roleService.selectRoleAll();
+        for (int i=0;i<roles.size();i++){
+            System.out.println(roles.get(i));
+        }
         ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         ajax.put("posts", postService.selectPostAll());
         if (StringUtils.isNotNull(userId))
