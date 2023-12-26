@@ -216,7 +216,7 @@ export default {
       this.reset();
       this.open = true;
       this.update = false;
-      this.title = "添加银行卡管理";
+      this.title = "绑定银行卡";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -226,7 +226,7 @@ export default {
       getCardManagement(cardId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改银行卡管理";
+        this.title = "修改银行卡信息";
       });
     },
     /** 提交按钮 */
@@ -245,11 +245,22 @@ export default {
                 });
               } 
               else {
-                addCardManagement(this.form).then(response => {
-                this.$modal.msgSuccess("新增成功");
-                this.open = false;
-                this.getList();
+                getCardManagement(this.form.cardId).then(responseB=>{
+                console.log(responseB.data);
+                if(responseB.data==null)
+                {
+                  addCardManagement(this.form).then(response => {
+                  this.$modal.msgSuccess("新增成功");
+                  this.open = false;
+                  this.getList();
+                  });
+                }
+                else
+                {
+                  this.$modal.msgError("此银行卡已存在");
+                }
                 });
+                
               }
             }
             else{
