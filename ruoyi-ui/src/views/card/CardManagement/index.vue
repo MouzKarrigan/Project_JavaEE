@@ -106,6 +106,9 @@
     <!-- 添加或修改银行卡管理对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="银行卡ID" prop="cardId">
+          <el-input v-model="form.cardId" placeholder="请输入银行卡ID" />
+        </el-form-item>
         <el-form-item label="持卡人ID" prop="userId">
           <el-input v-model="form.userId" placeholder="请输入持卡人ID" />
         </el-form-item>
