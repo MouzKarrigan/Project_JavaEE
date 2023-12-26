@@ -126,6 +126,7 @@
 
 <script>
 import { listCardManagement, getCardManagement, delCardManagement, addCardManagement, updateCardManagement } from "@/api/card/CardManagement";
+import { getUser } from "@/api/system/user";
 
 export default {
   name: "CardManagement",
@@ -161,7 +162,9 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      // 修改或新增
+      update: true,
     };
   },
   created() {
@@ -212,11 +215,13 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
+      this.update = false;
       this.title = "添加银行卡管理";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+      this.update = true;
       const cardId = row.cardId || this.ids
       getCardManagement(cardId).then(response => {
         this.form = response.data;
@@ -228,7 +233,7 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.cardId != null) {
+          if (this.form.cardId != null && this.update) {
             updateCardManagement(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
