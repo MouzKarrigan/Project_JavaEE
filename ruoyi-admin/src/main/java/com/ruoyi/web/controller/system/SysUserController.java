@@ -110,9 +110,14 @@ public class SysUserController extends BaseController
         if (StringUtils.isNotNull(userId))
         {
             SysUser sysUser = userService.selectUserById(userId);
-            ajax.put(AjaxResult.DATA_TAG, sysUser);
-            ajax.put("postIds", postService.selectPostListByUserId(userId));
-            ajax.put("roleIds", sysUser.getRoles().stream().map(SysRole::getRoleId).collect(Collectors.toList()));
+            if(sysUser!=null){
+                ajax.put(AjaxResult.DATA_TAG, sysUser);
+                ajax.put("postIds", postService.selectPostListByUserId(userId));
+                ajax.put("roleIds", sysUser.getRoles().stream().map(SysRole::getRoleId).collect(Collectors.toList()));
+            }
+            else{
+                return AjaxResult.success("操作失败");
+            }
         }
         return ajax;
     }

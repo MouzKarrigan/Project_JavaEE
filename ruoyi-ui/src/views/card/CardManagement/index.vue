@@ -233,19 +233,30 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
-          if (this.form.cardId != null && this.update) {
-            updateCardManagement(this.form).then(response => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addCardManagement(this.form).then(response => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
+          getUser(this.form.userId).then(responseA => {
+            if(responseA.msg=="操作成功")
+            {
+              if (this.form.cardId != null && this.update) {
+                updateCardManagement(this.form).then(response => {
+                console.log("1234");
+                this.$modal.msgSuccess("修改成功");
+                this.open = false;
+                this.getList();
+                });
+              } 
+              else {
+                addCardManagement(this.form).then(response => {
+                this.$modal.msgSuccess("新增成功");
+                this.open = false;
+                this.getList();
+                });
+              }
+            }
+            else{
+              this.$modal.msgError("未找到该用户");
+            };
+          });
+          
         }
       });
     },
