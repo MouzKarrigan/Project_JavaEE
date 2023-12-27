@@ -14,7 +14,7 @@
           v-model="queryParams.fSize" 
           size="large"
           :max=5
-          :texts="['1亿以下', '1-10亿', '10-30亿', '30-100亿', '100亿以上']"
+          :texts="fSizeDisplay"
           :colors="['blue','blue','blue']"
           show-text
           style="position:relative;top:5px"
@@ -51,7 +51,7 @@
           v-model="queryParams.fLevel" 
           size="large"
           :max=5
-          :texts="['较差', '合格', '中等', '良好', '极佳']"
+          :texts="fLevelDisplay"
           show-text
           style="position:relative;top:5px"
           @change="handleQuery"
@@ -62,7 +62,7 @@
           v-model="queryParams.fRiskLevel" 
           size="large" 
           :max=3
-          :texts="['低风险', '中风险', '高风险']"
+          :texts="fRiskLevelDisplay"
           :colors="['red','red','red']"
           show-text
           style="position:relative;top:5px"
@@ -134,7 +134,11 @@
       <el-table-column label="基金代码" align="center" prop="fId" />
       <el-table-column label="基金名称" align="center" prop="fName" />
       <el-table-column label="基金类型" align="center" prop="fType" />
-      <el-table-column label="基金规模" align="center" prop="fSize" />
+      <el-table-column label="基金规模" align="center" prop="fSize">
+        <template slot-scope="scope">
+          <span>{{ fSizeDisplay[scope.row.fSize-1] }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="基金经理" align="center" prop="fMonitor" />
       <el-table-column label="成立日" align="center" prop="fStartTime" width="180">
         <template slot-scope="scope">
@@ -142,8 +146,16 @@
         </template>
       </el-table-column>
       <el-table-column label="所属公司" align="center" prop="fCompany" />
-      <el-table-column label="基金评级" align="center" prop="fLevel" />
-      <el-table-column label="风险评级" align="center" prop="fRiskLevel" />
+      <el-table-column label="基金评级" align="center" prop="fLevel">
+        <template slot-scope="scope">
+          <span>{{ fLevelDisplay[scope.row.fLevel-1] }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="风险评级" align="center" prop="fRiskLevel">
+        <template slot-scope="scope">
+          <span>{{ fRiskLevelDisplay[scope.row.fRiskLevel-1] }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="基本概况" align="center" prop="fOverview" />
       <el-table-column label="基金状态" align="center" prop="fStatus" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
@@ -186,7 +198,7 @@
             v-model="form.fSize" 
             size="large"
             :max=5
-            :texts="['1亿以下', '1-10亿', '10-30亿', '30-100亿', '100亿以上']"
+            :texts="fSizeDisplay"
             :colors="['blue','blue','blue']"
             show-text
             style="position:relative;top:5px"
@@ -216,7 +228,7 @@
             v-model="form.fLevel" 
             size="large"
             :max=5
-            :texts="['较差', '合格', '中等', '良好', '极佳']"
+            :texts="fLevelDisplay"
             show-text
             style="position:relative;top:5px"
           />
@@ -226,7 +238,7 @@
             v-model="form.fRiskLevel" 
             size="large" 
             :max=3
-            :texts="['低风险', '中风险', '高风险']"
+            :texts="fRiskLevelDisplay"
             :colors="['red','red','red']"
             show-text
             style="position:relative;top:5px"
@@ -296,7 +308,13 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      // 基金规模显示
+      fSizeDisplay : ['1亿以下', '1-10亿', '10-30亿', '30-100亿', '100亿以上'],
+      // 基金评级显示
+      fLevelDisplay : ['较差', '合格', '中等', '良好', '极佳'],
+      // 基金风险评级显示
+      fRiskLevelDisplay : ['低风险', '中风险', '高风险'],
     };
   },
   created() {
